@@ -1,0 +1,112 @@
+version: 2
+
+sources:
+  - name: snowbearair
+    database: SNOWBEARAIR_DB
+    schema: RAW
+    description: >
+      Raw tables loaded by Airflow DAGs into Snowflake.
+      TODO: Replace LASTN_FI in each table name below with your own prefix
+      (e.g., if your name is Jane Smith, use SMITHJ_NEWS, SMITHJ_STOCKS, SMITHJ_WEATHER).
+
+    tables:
+
+      # ----------------------------------------------------------------
+      # NEWS — loaded by: news_to_sftp_dag → sftp_to_snowflake_dagv2
+      # Source: Finnhub API (financial news by stock symbol)
+      # ----------------------------------------------------------------
+      - name: LASTN_FI_NEWS
+        description: Daily financial news articles fetched from Finnhub, one row per article.
+        columns:
+          - name: ID
+            description: Unique article identifier from Finnhub.
+            tests:
+              - not_null
+              - unique
+          - name: HEADLINE
+            description: News article headline.
+            tests:
+              - not_null
+          - name: DATETIME
+            description: Article publish timestamp (converted from Unix epoch seconds).
+            tests:
+              - not_null
+          - name: CATEGORY
+            description: News category (e.g., company, top news).
+          - name: SOURCE
+            description: Publisher/news outlet name.
+          - name: RELATED
+            description: Stock ticker symbol this article is related to (e.g., AAPL, TSLA).
+            tests:
+              - not_null
+          - name: SUMMARY
+            description: Short article summary text.
+          - name: URL
+            description: Link to the full article.
+          - name: IMAGE
+            description: URL of the article thumbnail image.
+
+      # ----------------------------------------------------------------
+      # STOCKS — loaded by: stocks_to_mongo_dagv3 → mongo_to_snowflake_dag
+      # Source: Yahoo Finance (yfinance) via MongoDB staging
+      # ----------------------------------------------------------------
+      - name: LASTN_FI_STOCKS
+        description: Daily OHLCV stock data for S&P 500 symbols, one row per symbol per trading day.
+        columns:
+          - name: SYMBOL
+            description: Stock ticker symbol (e.g., AAPL, MSFT).
+            tests:
+              - not_null
+          - name: TRADE_DATE
+            description: The trading date for this record.
+            tests:
+              - not_null
+          - name: OPEN
+            description: Opening price for the trading day (USD).
+            tests:
+              - not_null
+              - is_positive_amount
+          - name: HIGH
+            description: Intraday high price (USD).
+            tests:
+              - not_null
+              - is_positive_amount
+          - name: LOW
+            description: Intraday low price (USD).
+            tests:
+              - not_null
+              - is_positive_amount
+          - name: CLOSE
+            description: Closing price for the trading day (USD).
+            tests:
+              - not_null
+              - is_positive_amount
+          - name: VOLUME
+            description: Total shares traded during the session.
+            tests:
+              - not_null
+              - is_positive_amount
+
+      # ----------------------------------------------------------------
+      # WEATHER — loaded by: weather_to_snowflake_dag_v2
+      # Source: Open-Meteo Historical API (financial hub cities)
+      # ----------------------------------------------------------------
+      - name: LASTN_FI_WEATHER
+        description: Daily weather observations for financial hub cities, one row per city per day.
+        columns:
+          - name: DATE
+            description: The observation date.
+            tests:
+              - not_null
+          - name: CITY
+            description: Financial hub city name (e.g., New York, London, Tokyo).
+            tests:
+              - not_null
+          - name: MAX_TEMP
+            description: Maximum temperature for the day (degrees Celsius).
+          - name: MIN_TEMP
+            description: Minimum temperature for the day (degrees Celsius).
+          - name: PRECIP
+            description: Total precipitation for the day (mm).
+          - name: MAX_WIND
+            description: Maximum wind speed for the day (km/h).

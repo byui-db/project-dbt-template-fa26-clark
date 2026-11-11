@@ -1,0 +1,28 @@
+# ITM327 dbt connection profile
+# Our three layers: RAW (source, read-only) → STAGING → MODELED
+#   RAW      — Airflow writes here; dbt only reads (declared as a source)
+#   STAGING  — dbt's dev/build environment   → target: dev   (default)
+#   MODELED  — dbt's production environment   → target: prod
+#
+# Note: the dbt demo video names its targets "dev" and "prod" — we keep those
+# target names so the video's commands work as-is, but they write to our
+# STAGING and MODELED schemas, not schemas literally named DEV/PROD.
+itm327:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: TRAINING_ROLE
+      database: SNOWBEARAIR_DB
+      schema: STAGING
+      warehouse: ANIMAL_TASK_WH
+    prod:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: TRAINING_ROLE
+      database: SNOWBEARAIR_DB
+      schema: MODELED
+      warehouse: ANIMAL_TASK_WH

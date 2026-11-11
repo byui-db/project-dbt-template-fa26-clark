@@ -1,0 +1,1 @@
+{{ test_unique(column_name="ID", model=get_where_subquery(source('snowbearair', 'LASTN_FI_NEWS'))) }}
