@@ -1,5 +1,7 @@
 # Instructor Setup — ITM327 dbt Template
 
+> **FA26:** the account is stood up by the notebooks in `itm327_anskey` (`admin_setup.ipynb` / `student_setup.ipynb`), not this script. `snowflake_setup.sql` and the `SNOWBEARAIR_DB` / `TRAINING_ROLE` names below are from the previous account and are kept for reference only.
+
 > **Students:** This folder is not part of your project work. Nothing here needs to be run or modified by you. Your work begins in `models/staging/`.
 
 ---

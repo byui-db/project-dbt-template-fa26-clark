@@ -14,15 +14,15 @@ itm327:
       type: snowflake
       account: 'not needed'
       user: 'not needed'
-      role: TRAINING_ROLE
-      database: SNOWBEARAIR_DB
+      role: STUDENT
+      database: PROJECT_DB
       schema: STAGING
-      warehouse: ANIMAL_TASK_WH
+      warehouse: STUDENT_WH
     prod:
       type: snowflake
       account: 'not needed'
       user: 'not needed'
-      role: TRAINING_ROLE
-      database: SNOWBEARAIR_DB
+      role: STUDENT
+      database: PROJECT_DB
       schema: MODELED
-      warehouse: ANIMAL_TASK_WH
+      warehouse: STUDENT_WH

@@ -9,7 +9,7 @@ pipelines loaded into Snowflake into a structured data warehouse and two data ma
 **Your data pipeline so far:**
 
 ```
-Open-Meteo API  ──► Airflow (weather_to_snowflake_dag)  ──► SNOWBEARAIR_DB.RAW.LASTN_FI_WEATHER
+Open-Meteo API  ──► Airflow (weather_to_snowflake_dag)  ──► PROJECT_DB.RAW.LASTN_FI_WEATHER
 Yahoo Finance   ──► Airflow (stocks_to_mongo → mongo_to_snowflake) ──► RAW.LASTN_FI_STOCKS
 Finnhub API     ──► Airflow (news_to_sftp → sftp_to_snowflake)     ──► RAW.LASTN_FI_NEWS
 ```
@@ -46,6 +46,8 @@ Snowflake Workspaces connects to GitHub using a PAT instead of your password.
    - **Scopes**: check `repo` (full control of repositories)
 5. Click **Generate token** — copy it immediately and save it somewhere safe (you cannot view it again)
 
+> **Use a fine-grained token limited to your fork only** (Repository access → *Only select repositories* → your fork; Permissions → *Contents: Read and write*). All students share one Snowflake role, so a token with broad `repo` access is wider than you need.
+
 > Never commit your token to version control. If you suspect it was exposed, delete it and generate a new one.
 
 **Troubleshooting:**
@@ -59,8 +61,8 @@ For more detail, see the [GitHub Personal Access Token documentation](https://do
 
 ## Before You Start — Customize Your Table Names
 
-You share the `SNOWBEARAIR_DB` database, the `STAGING` / `MODELED` schemas, and the
-`TRAINING_ROLE` with the **whole class**. So two things must carry **your prefix** before
+You share the `PROJECT_DB` database, the `STAGING` / `MODELED` schemas, and the
+`STUDENT` with the **whole class**. So two things must carry **your prefix** before
 you run dbt — otherwise you'll read the wrong raw tables, or overwrite a classmate's
 models with your own (identical file names → identical table names → last run wins).
 
@@ -107,6 +109,7 @@ Video from the dbt Demo (reference as needed)
 
 ### When you get to the Git Repo Setup
 - Use **your fork's URL** instead of the one in the video
+- In Snowsight's Git dialog choose database `PROJECT_DB`, schema `RAW`, and the `GIT_INTEGRATION` integration
 - Select **Personal Access Token** and paste the PAT you created above
 - Otherwise follow the video step by step
 
@@ -124,7 +127,7 @@ Video from the dbt Demo (reference as needed)
 4. View the compiled SQL in `target/compiled/`
 5. Run compiled SQL directly in Snowflake to inspect results
 6. **`dbt test`** — run data quality tests against your sources
-7. **Deploy** the project to `SNOWBEARAIR_DB.RAW` as the metadata schema
+7. **Deploy** the project to `PROJECT_DB.RAW` as the metadata schema
    - Use the naming convention: `dbt_project_lastn_fi`
    - **Why RAW?** When deploying a dbt project in Snowflake, you must choose a schema to store
      dbt's internal metadata (run history, artifact tables). We use `RAW` here because it already
@@ -140,7 +143,7 @@ Video from the dbt Demo (reference as needed)
 ```
 itm327_dbt_template/
 ├── dbt_project.yml          # Project name, profile, materialization config
-├── profiles.yml             # Snowflake connection (SNOWBEARAIR_DB, dev/prod)
+├── profiles.yml             # Snowflake connection (PROJECT_DB, dev/prod)
 ├── packages.yml             # External dbt packages (dbt_utils, commented out)
 │
 ├── models/
@@ -181,7 +184,7 @@ itm327_dbt_template/
 
 | Layer | Folder | Materialization | Purpose |
 |-------|--------|-----------------|---------|
-| Raw | `SNOWBEARAIR_DB.RAW` | Tables (Airflow writes) | Source of truth — dbt never writes here |
+| Raw | `PROJECT_DB.RAW` | Tables (Airflow writes) | Source of truth — dbt never writes here |
 | Staging | `models/staging/` | Views | Pass-through from RAW; where sources are declared and tested |
 | Warehouse | `models/warehouse/` | Tables | Dimensional model — facts and dimensions |
 | Marts | `models/marts/` | Tables | Business questions built on top of the warehouse |
@@ -239,8 +242,8 @@ The `warehouse/` folder is where you turn normalized staging data into a star sc
 
 ### Deployment & Orchestration
 
-- `dev` target → `SNOWBEARAIR_DB.STAGING` schema (for development — the default)
-- `prod` target → `SNOWBEARAIR_DB.MODELED` schema (for scheduled production runs)
+- `dev` target → `PROJECT_DB.STAGING` schema (for development — the default)
+- `prod` target → `PROJECT_DB.MODELED` schema (for scheduled production runs)
 - Snowflake Tasks can schedule dbt project runs for orchestration
 
 ### Dev/Prod and CI/CD (Beyond the Demo)
@@ -257,9 +260,9 @@ this workflow is automated through CI/CD:
 
 | Schema | Written by | Contains |
 |--------|-----------|----------|
-| `SNOWBEARAIR_DB.RAW` | Airflow | Raw source tables — dbt reads here, never writes |
-| `SNOWBEARAIR_DB.STAGING` | dbt (`--target dev`) | Work-in-progress staging views + warehouse/mart tables |
-| `SNOWBEARAIR_DB.MODELED` | dbt (`--target prod`) | Production-quality, tested transformations for reporting |
+| `PROJECT_DB.RAW` | Airflow | Raw source tables — dbt reads here, never writes |
+| `PROJECT_DB.STAGING` | dbt (`--target dev`) | Work-in-progress staging views + warehouse/mart tables |
+| `PROJECT_DB.MODELED` | dbt (`--target prod`) | Production-quality, tested transformations for reporting |
 
 This layered pattern ensures broken SQL or failed tests never reach production.
 
