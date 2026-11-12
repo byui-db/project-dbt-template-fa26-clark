@@ -1,1 +1,0 @@
-{{ test_not_null(column_name="CLOSE", model=get_where_subquery(source('snowbearair', 'LASTN_FI_STOCKS'))) }}

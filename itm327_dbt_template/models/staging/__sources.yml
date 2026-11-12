@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: snowbearair
-    database: SNOWBEARAIR_DB
+    database: PROJECT_DB
     schema: RAW
     description: >
       Raw tables loaded by Airflow DAGs into Snowflake.

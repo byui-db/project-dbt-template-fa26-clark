@@ -9,7 +9,7 @@ pipelines loaded into Snowflake into a structured data warehouse and two data ma
 **Your data pipeline so far:**
 
 ```
-Open-Meteo API  ──► Airflow (weather_to_snowflake_dag)  ──► SNOWBEARAIR_DB.RAW.LASTN_FI_WEATHER
+Open-Meteo API  ──► Airflow (weather_to_snowflake_dag)  ──► PROJECT_DB.RAW.LASTN_FI_WEATHER
 Yahoo Finance   ──► Airflow (stocks_to_mongo → mongo_to_snowflake) ──► RAW.LASTN_FI_STOCKS
 Finnhub API     ──► Airflow (news_to_sftp → sftp_to_snowflake)     ──► RAW.LASTN_FI_NEWS
 ```
@@ -59,8 +59,8 @@ For more detail, see the [GitHub Personal Access Token documentation](https://do
 
 ## Before You Start — Customize Your Table Names
 
-You share the `SNOWBEARAIR_DB` database, the `STAGING` / `MODELED` schemas, and the
-`TRAINING_ROLE` with the **whole class**. So two things must carry **your prefix** before
+You share the `PROJECT_DB` database, the `STAGING` / `MODELED` schemas, and the
+`STUDENT` with the **whole class**. So two things must carry **your prefix** before
 you run dbt — otherwise you'll read the wrong raw tables, or overwrite a classmate's
 models with your own (identical file names → identical table names → last run wins).
 
@@ -118,13 +118,13 @@ Video from the dbt Demo (reference as needed)
 > doing its job, not a bug. Fix your prefix and re-run.
 
 1. **`dbt deps`** — install packages. This project uses **no** external packages, so you'll see `Warning: No packages were found in packages.yml`. **That is expected — it is not an error.** Move on to `dbt compile`.
-   - *If you're following the demo (tb_101) or you add a package like `dbt_utils`:* in Snowflake Workspaces, `dbt deps` has to download packages over the network, which is blocked by default. In the run popover, select the **`dbt_access_integration`** External Access Integration before running deps, and it will download. (This is the name used in Snowflake's dbt guide and the Tasty Bytes demo; if your account lists several dbt integrations, any will work, but pick this one. You do **not** need this for this template, since it has no packages.)
+   - *If you add a package like `dbt_utils`:* package downloads are not enabled on the FA26 Snowflake account, so ask your instructor first. This template needs none.
 2. **`dbt compile`** — validate SQL and Jinja without running anything
 3. **`dbt run`** — build all models in dependency order (can take several minutes)
 4. View the compiled SQL in `target/compiled/`
 5. Run compiled SQL directly in Snowflake to inspect results
 6. **`dbt test`** — run data quality tests against your sources
-7. **Deploy** the project to `SNOWBEARAIR_DB.RAW` as the metadata schema
+7. **Deploy** the project to `PROJECT_DB.RAW` as the metadata schema
    - Use the naming convention: `dbt_project_lastn_fi`
    - **Why RAW?** When deploying a dbt project in Snowflake, you must choose a schema to store
      dbt's internal metadata (run history, artifact tables). We use `RAW` here because it already
@@ -140,7 +140,7 @@ Video from the dbt Demo (reference as needed)
 ```
 itm327_dbt_template/
 ├── dbt_project.yml          # Project name, profile, materialization config
-├── profiles.yml             # Snowflake connection (SNOWBEARAIR_DB, dev/prod)
+├── profiles.yml             # Snowflake connection (PROJECT_DB, dev/prod)
 ├── packages.yml             # External dbt packages (dbt_utils, commented out)
 │
 ├── models/
@@ -170,7 +170,6 @@ itm327_dbt_template/
 │       └── test_is_positive_amount.sql  # Custom test: value must be > 0
 │
 └── setup/
-    └── snowflake_setup.sql   # Run once in Snowflake before your first dbt run
 ```
 
 ---
@@ -181,7 +180,7 @@ itm327_dbt_template/
 
 | Layer | Folder | Materialization | Purpose |
 |-------|--------|-----------------|---------|
-| Raw | `SNOWBEARAIR_DB.RAW` | Tables (Airflow writes) | Source of truth — dbt never writes here |
+| Raw | `PROJECT_DB.RAW` | Tables (Airflow writes) | Source of truth — dbt never writes here |
 | Staging | `models/staging/` | Views | Pass-through from RAW; where sources are declared and tested |
 | Warehouse | `models/warehouse/` | Tables | Dimensional model — facts and dimensions |
 | Marts | `models/marts/` | Tables | Business questions built on top of the warehouse |
@@ -239,8 +238,8 @@ The `warehouse/` folder is where you turn normalized staging data into a star sc
 
 ### Deployment & Orchestration
 
-- `dev` target → `SNOWBEARAIR_DB.STAGING` schema (for development — the default)
-- `prod` target → `SNOWBEARAIR_DB.MODELED` schema (for scheduled production runs)
+- `dev` target → `PROJECT_DB.STAGING` schema (for development — the default)
+- `prod` target → `PROJECT_DB.MODELED` schema (for scheduled production runs)
 - Snowflake Tasks can schedule dbt project runs for orchestration
 
 ### Dev/Prod and CI/CD (Beyond the Demo)
@@ -257,9 +256,9 @@ this workflow is automated through CI/CD:
 
 | Schema | Written by | Contains |
 |--------|-----------|----------|
-| `SNOWBEARAIR_DB.RAW` | Airflow | Raw source tables — dbt reads here, never writes |
-| `SNOWBEARAIR_DB.STAGING` | dbt (`--target dev`) | Work-in-progress staging views + warehouse/mart tables |
-| `SNOWBEARAIR_DB.MODELED` | dbt (`--target prod`) | Production-quality, tested transformations for reporting |
+| `PROJECT_DB.RAW` | Airflow | Raw source tables — dbt reads here, never writes |
+| `PROJECT_DB.STAGING` | dbt (`--target dev`) | Work-in-progress staging views + warehouse/mart tables |
+| `PROJECT_DB.MODELED` | dbt (`--target prod`) | Production-quality, tested transformations for reporting |
 
 This layered pattern ensures broken SQL or failed tests never reach production.
 
