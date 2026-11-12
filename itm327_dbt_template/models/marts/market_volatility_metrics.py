@@ -78,4 +78,5 @@ def model(dbt, session):
     # TODO: Aggregate per symbol using .groupBy().agg()
     # TODO: Join Cortex sentiment scores via session.sql()
     # TODO: Return the final Snowpark DataFrame
-    pass
+    # Placeholder so the template compiles; REPLACE this return with your own DataFrame.
+    return session.sql("select 1 as placeholder")
