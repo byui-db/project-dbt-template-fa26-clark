@@ -60,7 +60,7 @@ For more detail, see the [GitHub Personal Access Token documentation](https://do
 ## Before You Start — Customize Your Table Names
 
 You share the `PROJECT_DB` database, the `STAGING` / `MODELED` schemas, and the
-`STUDENT` with the **whole class**. So two things must carry **your prefix** before
+`STUDENT` role with the **whole class**. So two things must carry **your prefix** before
 you run dbt — otherwise you'll read the wrong raw tables, or overwrite a classmate's
 models with your own (identical file names → identical table names → last run wins).
 
@@ -168,8 +168,6 @@ itm327_dbt_template/
 ├── tests/
 │   └── generic/
 │       └── test_is_positive_amount.sql  # Custom test: value must be > 0
-│
-└── setup/
 ```
 
 ---

@@ -43,3 +43,4 @@
 -- ============================================================
 
 -- TODO: Write your CTEs and SELECT statement below
+select 1 as placeholder  -- placeholder so the template compiles; DELETE this line when you write your own SELECT
