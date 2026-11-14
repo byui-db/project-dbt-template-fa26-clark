@@ -11,7 +11,7 @@ vars:
   # Every model you build is suffixed with this (e.g. DIM_NEWS_SMITHJ) so it won't
   # overwrite a classmate's table in the shared STAGING / MODELED schemas.
   # (Applied automatically by macros/generate_alias_name.sql — you don't edit that file.)
-  student_prefix: "SMITHJ"
+  student_prefix: "BHATTARAI_A"
 
 ## Sources
 model-paths: [models]

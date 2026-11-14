@@ -15,7 +15,7 @@ sources:
       # NEWS — loaded by: news_to_sftp_dag → sftp_to_snowflake_dagv2
       # Source: Finnhub API (financial news by stock symbol)
       # ----------------------------------------------------------------
-      - name: LASTN_FI_NEWS
+      - name: SFTP_NEWS_BHATTARAI_A
         description: Daily financial news articles fetched from Finnhub, one row per article.
         columns:
           - name: ID
@@ -27,7 +27,7 @@ sources:
             description: News article headline.
             tests:
               - not_null
-          - name: DATETIME
+          - name: PUBLISHED_AT
             description: Article publish timestamp (converted from Unix epoch seconds).
             tests:
               - not_null
@@ -35,7 +35,7 @@ sources:
             description: News category (e.g., company, top news).
           - name: SOURCE
             description: Publisher/news outlet name.
-          - name: RELATED
+          - name: TICKER
             description: Stock ticker symbol this article is related to (e.g., AAPL, TSLA).
             tests:
               - not_null
@@ -50,7 +50,7 @@ sources:
       # STOCKS — loaded by: stocks_to_mongo_dagv3 → mongo_to_snowflake_dag
       # Source: Yahoo Finance (yfinance) via MongoDB staging
       # ----------------------------------------------------------------
-      - name: LASTN_FI_STOCKS
+      - name: MONGO_STOCK_BHATTARAI_A
         description: Daily OHLCV stock data for S&P 500 symbols, one row per symbol per trading day.
         columns:
           - name: SYMBOL
@@ -91,7 +91,7 @@ sources:
       # WEATHER — loaded by: weather_to_snowflake_dag_v2
       # Source: Open-Meteo Historical API (financial hub cities)
       # ----------------------------------------------------------------
-      - name: LASTN_FI_WEATHER
+      - name: MONGO_STOCK_BHATTARAI_A
         description: Daily weather observations for financial hub cities, one row per city per day.
         columns:
           - name: DATE
