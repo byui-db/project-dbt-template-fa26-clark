@@ -1,0 +1,72 @@
+version: 2
+
+models:
+
+  # ---------------- FACT TABLES (composite keys) ----------------
+  - name: fct_daily_stocks
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - SYMBOL
+            - TRADE_DATE
+    columns:
+      - name: SYMBOL
+        tests:
+          - not_null
+      - name: TRADE_DATE
+        tests:
+          - not_null
+      - name: DIRECTION
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['UP', 'DOWN', 'FLAT']
+
+  - name: fct_daily_weather
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - CITY
+            - DATE
+    columns:
+      - name: CITY
+        tests:
+          - not_null
+      - name: DATE
+        tests:
+          - not_null
+
+  # ---------------- DIMENSIONS (single-column keys) ----------------
+  - name: dim_date
+    columns:
+      - name: DATE_KEY
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_symbols
+    columns:
+      - name: SYMBOL
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_weather_cities
+    columns:
+      - name: CITY
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_news
+    columns:
+      - name: ID
+        tests:
+          - not_null
+          - unique
+      - name: SYMBOL          # foreign key -> dim_symbols
+        tests:
+          - not_null
+      - name: DATE_KEY        # foreign key -> dim_date
+        tests:
+          - not_null
