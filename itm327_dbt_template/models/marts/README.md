@@ -105,7 +105,7 @@ Create `models/marts/marts_tests.yml` to validate your mart models. See `tests/R
 
 Key tests for this layer:
 - `not_null` on primary key columns
-- `dbt_utils.unique_combination_of_columns` on composite primary keys
+- `unique` on the combined key columns for composite primary keys (see "Composite keys" in `tests/README.md`)
 - At least one additional column-level test of your choice
 
 Singular SQL tests for your mart go in the `tests/` folder — not here. See `tests/README.md` for which singular tests are required and when to write them.

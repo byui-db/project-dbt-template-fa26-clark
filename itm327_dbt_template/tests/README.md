@@ -98,6 +98,20 @@ models:
               values: ['UP', 'DOWN', 'FLAT']
 ```
 
+**Composite keys — `unique` on a combined expression (no package needed)**
+
+When no single column is unique (e.g. one row per `SYMBOL` per `TRADE_DATE`), declare `unique` at the **model level** and point it at the key columns joined into one expression. This project uses no packages, so do not reach for `dbt_utils` — the built-in test does the job.
+
+```yaml
+models:
+  - name: raw_stocks
+    data_tests:
+      - unique:
+          column_name: "SYMBOL || '|' || TRADE_DATE"
+```
+
+Use the same pattern for every composite grain: staging (M4), the fact tables (M5), and your mart (M6). Keep `not_null` on each key column too — the combined expression only checks uniqueness.
+
 Run with: `dbt test --select raw_stocks` or `dbt test --select fct_daily_stocks`
 
 ---

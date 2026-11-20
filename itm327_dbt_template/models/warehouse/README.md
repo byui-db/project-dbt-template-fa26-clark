@@ -76,7 +76,7 @@ Create `models/warehouse/warehouse_tests.yml` to validate your warehouse models.
 
 Key tests for this layer:
 - `not_null` on all primary and foreign key columns
-- `unique` or `dbt_utils.unique_combination_of_columns` on every model's grain
+- `unique` on every model's grain — a single column, or the combined key columns for composite grains (see "Composite keys" in `tests/README.md`)
 - `accepted_values` on `DIRECTION` in `fct_daily_stocks`
 
 ---
